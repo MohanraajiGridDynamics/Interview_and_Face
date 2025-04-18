@@ -1,0 +1,45 @@
+.interview-container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .chat-window {
+    margin-top: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .ai-message {
+    text-align: left;
+    background-color: #e0f7fa;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+  }
+  
+  .candidate-message {
+    text-align: right;
+    background-color: #ffeb3b;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+  }
+  
+  .voice-controls {
+    margin-top: 20px;
+  }
+  
+  button {
+    padding: 10px 15px;
+    font-size: 16px;
+    margin: 5px;
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+  }
+  

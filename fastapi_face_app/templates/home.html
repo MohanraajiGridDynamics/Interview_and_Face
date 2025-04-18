@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FastAPI - Real Time Face & Emotion Detection</title>
+    <style>
+        body { text-align: center; font-family: sans-serif; background-color: #f2f2f2; }
+        .info-box { margin-top: 20px; padding: 20px; background: white; display: inline-block; border-radius: 10px; }
+        img { border-radius: 12px; border: 3px solid #333; }
+    </style>
+</head>
+<body>
+    <h1>📷 Real-Time Face Detection (FastAPI)</h1>
+    <img src="/video_feed" width="640" height="480" />
+
+    <div class="info-box">
+        <h2>Status</h2>
+        <p><strong>Face Match:</strong> <span id="match">N/A</span></p>
+        <p><strong>Emotion:</strong> <span id="emotion">N/A</span></p>
+        <p><strong>Face Direction:</strong> <span id="face_dir">N/A</span></p>
+        <p><strong>Eye Direction:</strong> <span id="eye_dir">N/A</span></p>
+    </div>
+
+    <script>
+        async function updateStatus() {
+            try {
+                const res = await fetch('/status');
+                const data = await res.json();
+                document.getElementById('emotion').textContent = data.emotion;
+                document.getElementById('face_dir').textContent = data.face_dir;
+                document.getElementById('eye_dir').textContent = data.eye_dir;
+                document.getElementById('match').textContent = data.match;
+            } catch (err) {
+                console.error("Status update failed:", err);
+            }
+        }
+
+        setInterval(updateStatus, 1000);
+    </script>
+</body>
+</html>
