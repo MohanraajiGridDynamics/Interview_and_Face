@@ -1,47 +1,72 @@
 import React, { useState, useEffect } from 'react';
 
-// Component to show the AI Interviewer and Face Recognition UI
 const InterviewPage = () => {
   const [status, setStatus] = useState({
     emotion: "N/A",
     face_dir: "N/A",
     eye_dir: "N/A",
-    match: "N/A"
+    match_status: "N/A",
+    face_count: "N/A",
   });
 
-  // Fetch the current status from the backend periodically
-  useEffect(() => {
-    const fetchStatus = async () => {
-      try {
-        const response = await fetch("http://localhost:8001/status");
-        const data = await response.json();
-        setStatus(data);
-      } catch (error) {
-        console.error("Error fetching status:", error);
+  const [malpractice, setMalpractice] = useState({
+    verdict: "Loading...",
+    warning_count: 0,
+  });
+
+  // Fetch status from /status
+  const fetchStatus = async () => {
+    try {
+      const response = await fetch("http://localhost:8001/status");
+      const data = await response.json();
+      setStatus(prev => ({ ...prev, ...data }));
+    } catch (error) {
+      console.error("Error fetching status:", error);
+    }
+  };
+
+  // Fetch malpractice info from /malpractice
+  const fetchMalpractice = async () => {
+    try {
+      const response = await fetch("http://localhost:8001/malpractice");
+      const data = await response.json();
+
+      if (data.warning_count > 5) {
+        window.location.href = "/disqualified.html";
       }
-    };
 
-    // Polling every 2 seconds to update the status
-    const intervalId = setInterval(fetchStatus, 2000);
+      setMalpractice(prev => ({ ...prev, ...data }));
+    } catch (error) {
+      console.error("Error fetching malpractice:", error);
+    }
+  };
 
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchStatus();
+      fetchMalpractice();
+    }, 2000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <div style={styles.container}>
-      {/* AI Interview Chat */}
       <div style={styles.chatContainer}>
         <InterviewChat />
       </div>
 
-      {/* Face Recognition Status */}
       <div style={styles.faceRecognitionContainer}>
         <div style={styles.faceRecognitionBox}>
           <div style={styles.faceStatus}>
-            Emotion: {status.emotion} | Face Direction: {status.face_dir} | Match: {status.match}
+            <div><strong>Emotion:</strong> {status.emotion}</div>
+            <div><strong>Face Direction:</strong> {status.face_dir}</div>
+            <div><strong>Eye Direction:</strong> {status.eye_dir}</div>
+            <div><strong>Face Count:</strong> {status.face_count}</div>
+            <div><strong>Match Status:</strong> {status.match_status}</div>
+            <div><strong>Verdict:</strong> {malpractice.verdict}</div>
+            <div><strong>Warning Count:</strong> {malpractice.warning_count}</div>
           </div>
-
-          {/* Display the webcam stream using an <img> for MJPEG compatibility */}
           <img
             style={styles.videoStream}
             src="http://localhost:8001/video_feed"
@@ -53,12 +78,10 @@ const InterviewPage = () => {
   );
 };
 
-// AI Interview Chat component (just a placeholder for now)
 const InterviewChat = () => {
   return (
     <div style={styles.chatBox}>
       <h3>AI Interviewer</h3>
-      {/* Here, you would include your AI interviewer chat logic */}
       <p>Chat with the AI interviewer...</p>
     </div>
   );
@@ -97,7 +120,7 @@ const styles = {
     padding: '16px',
     borderRadius: '8px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    textAlign: 'center',
+    textAlign: 'left',
   },
   faceRecognitionBox: {
     display: 'flex',
@@ -109,10 +132,12 @@ const styles = {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   faceStatus: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-    marginBottom: '8px',
-    color: '#4b5563',
+    fontSize: '14px',
+    fontWeight: '500',
+    marginBottom: '10px',
+    color: '#374151',
+    textAlign: 'left',
+    width: '100%',
   },
   videoStream: {
     borderRadius: '50%',

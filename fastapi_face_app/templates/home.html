@@ -19,6 +19,13 @@
         <p><strong>Face Direction:</strong> <span id="face_dir">N/A</span></p>
         <p><strong>Eye Direction:</strong> <span id="eye_dir">N/A</span></p>
     </div>
+    <div class="info-box">
+        <h2>Malpractice Verdict</h2>
+        <p><strong>Verdict:</strong> <span id="verdict">Loading...</span></p>
+        <p><strong>Warnings Count:</strong> <span id="warnings">0</span></p>
+
+    </div>
+    
 
     <script>
         async function updateStatus() {
@@ -36,5 +43,36 @@
 
         setInterval(updateStatus, 1000);
     </script>
+    <script>
+        async function updateStatus() {
+            try {
+                const res = await fetch('/status');
+                const data = await res.json();
+                document.getElementById('emotion').textContent = data.emotion;
+                document.getElementById('face_dir').textContent = data.face_dir;
+                document.getElementById('eye_dir').textContent = data.eye_dir;
+                document.getElementById('match').textContent = data.match;
+            } catch (err) {
+                console.error("Status update failed:", err);
+            }
+        }
+    
+        async function updateMalpractice() {
+            try {
+                const res = await fetch('/malpractice');
+                const data = await res.json();
+                document.getElementById('verdict').textContent = data.verdict;
+                document.getElementById('warnings').textContent = data.warning_count;
+            } catch (err) {
+                console.error("Malpractice update failed:", err);
+            }
+        }
+    
+        setInterval(() => {
+            updateStatus();
+            updateMalpractice();
+        }, 1000);
+    </script>
+    
 </body>
 </html>
